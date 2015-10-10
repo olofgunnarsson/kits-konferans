@@ -1,7 +1,7 @@
 package se.kits.dresser;
 
 import se.kits.clothing.Clothing;
-import se.kits.person.Person;
+import se.kits.people.Person;
 
 public class DressedPerson {
     public final Person person;

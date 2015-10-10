@@ -1,4 +1,4 @@
-package se.kits.person;
+package se.kits.people;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;

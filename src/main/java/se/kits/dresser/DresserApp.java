@@ -7,7 +7,7 @@ import io.reactivex.netty.protocol.http.server.HttpServer;
 import io.reactivex.netty.protocol.http.sse.ServerSentEvent;
 import rx.Observable;
 import se.kits.clothing.Clothing;
-import se.kits.person.Person;
+import se.kits.people.Person;
 import se.kits.utils.JsonHelper;
 import se.kits.utils.NettyUtils;
 

@@ -1,4 +1,4 @@
-package se.kits.person;
+package se.kits.people;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.RxNetty;
