@@ -14,15 +14,15 @@ import rx.functions.Func1;
 import java.io.UnsupportedEncodingException;
 
 public class NettyUtils {
-    public static Observable<String> createGetRequest(String host, int port) {
+    public static Observable<String> createGetRequest(String host, int port, String uri) {
         final HttpClient<ByteBuf, ServerSentEvent> client = RxNetty.createHttpClient(host, port, PipelineConfigurators.<ByteBuf>clientSseConfigurator());
-        final HttpClientRequest<ByteBuf> request = HttpClientRequest.createGet("/");
+        final HttpClientRequest<ByteBuf> request = HttpClientRequest.createGet(uri);
         return client.submit(request)
                 .flatMap(AbstractHttpContentHolder::getContent)
                 .map(ServerSentEvent::contentAsString);
     }
 
-    public static <R> Func1<R, Observable<? extends Void>> writeResponse(HttpServerResponse<ServerSentEvent> response) {
+    public static <R> Func1<R, Observable<? extends Void>> writeAsJson(HttpServerResponse<ServerSentEvent> response) {
         return object -> {
             final ByteBuf byteBuf;
             try {

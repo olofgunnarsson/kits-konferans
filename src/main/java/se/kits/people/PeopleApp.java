@@ -28,12 +28,13 @@ public class PeopleApp {
         add(new Person("Pierre", "Sandboge"));
     }};
 
+
     public static void main(String[] args) {
         HttpServer<ByteBuf, ServerSentEvent> server = RxNetty.createHttpServer(
                 1234,
                 (request, response) ->
                         Observable.from(PEOPLE)
-                                .flatMap(NettyUtils.writeResponse(response)),
+                                .flatMap(NettyUtils.writeAsJson(response)),
                 PipelineConfigurators.<ByteBuf>serveSseConfigurator());
         System.out.println("People server started...");
         server.startAndWait();

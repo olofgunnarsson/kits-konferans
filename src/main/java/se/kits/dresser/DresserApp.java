@@ -9,7 +9,9 @@ import rx.Observable;
 import se.kits.clothing.Clothing;
 import se.kits.people.Person;
 import se.kits.utils.JsonHelper;
-import se.kits.utils.NettyUtils;
+
+import static se.kits.utils.NettyUtils.createGetRequest;
+import static se.kits.utils.NettyUtils.writeAsJson;
 
 public class DresserApp {
 
@@ -18,23 +20,36 @@ public class DresserApp {
                 1236,
                 (request, response) ->
                         Observable
-                                .zip(getClothing(), getPeople(), (clothing, person) -> new DressedPerson(person, clothing))
-                                .flatMap(NettyUtils.writeResponse(response)),
+                                .zip(getShirts(), getPants(), getShoes(), getPeople(),
+                                        ((shirt, pants, shoes, person) -> new DressedPerson(person, shirt, pants, shoes)))
+                                .flatMap(writeAsJson(response)),
                 PipelineConfigurators.<ByteBuf>serveSseConfigurator());
         System.out.println("Dresser server started...");
         server.startAndWait();
     }
 
     public static Observable<Person> getPeople() {
-        return NettyUtils
-                .createGetRequest("localhost", 1234)
+        return createGetRequest("localhost", 1234, "/")
+                .onBackpressureBuffer()
                 .map(s -> JsonHelper.getAsObject(s, Person.class));
 
     }
 
-    public static Observable<Clothing> getClothing() {
-        return NettyUtils
-                .createGetRequest("localhost", 1235)
+    public static Observable<Clothing> getShirts() {
+        return createGetRequest("localhost", 1235, "/shirts")
+                .onBackpressureDrop()
+                .map(s -> JsonHelper.getAsObject(s, Clothing.class));
+    }
+
+    public static Observable<Clothing> getPants() {
+        return createGetRequest("localhost", 1235, "/pants")
+                .onBackpressureDrop()
+                .map(s -> JsonHelper.getAsObject(s, Clothing.class));
+    }
+
+    public static Observable<Clothing> getShoes() {
+        return createGetRequest("localhost", 1235, "/shoes")
+                .onBackpressureDrop()
                 .map(s -> JsonHelper.getAsObject(s, Clothing.class));
 
     }
