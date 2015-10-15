@@ -7,7 +7,23 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+@SuppressWarnings("Convert2MethodRef")
 public class TestObs {
+
+    private Person anna = new Person("Anna", "Johansson");
+    private Person johan = new Person("Johan", "Johansson");
+    private Person selma = new Person("Selma", "Johansson");
+    private Person petter = new Person("Petter", "Karlsson");
+    private Person fredrik = new Person("Fredrik", "Karlsson");
+    private Person david = new Person("David", "Karlsson");
+
+    private HashMap<Person, List<Person>> children = new HashMap<Person, List<Person>>() {{
+        put(anna, Arrays.asList(johan, selma));
+        put(petter, Arrays.asList(fredrik, david));
+    }};
+
+
+    private Observable<Person> people = Observable.just(anna, johan, petter, fredrik);
 
     @Test
     public void map() {
@@ -18,16 +34,45 @@ public class TestObs {
     }
 
     @Test
+
+
     public void flatMap() {
         Observable<Person> people = Observable.just(anna, petter);
         people
-                .flatMap(this::getRelatives,
-                        (parent, child) -> parent + " " + child)
+                .flatMap((person) -> getRelativesObservable(person))
                 .subscribe(System.out::println);
     }
 
-    public Observable<Person> getRelatives(Person person) {
+    public Observable<Person> getRelativesObservable(Person person)
+
+
+    {
         return Observable.from(children.get(person));
+    }
+
+    @Test
+    public void groupBy1() {
+        people
+                .groupBy(person -> person.lastName)
+                .flatMap(groupedByLastName ->
+                        groupedByLastName.toList()
+                                .map(groupedPeople ->
+                                        "People with lastname " + groupedByLastName.getKey() +
+                                                " are " + Arrays.toString(groupedPeople.toArray())))
+                .subscribe(System.out::println);
+    }
+
+    @Test
+    public void groupBy() throws Exception {
+        Observable.from(Arrays.asList(
+                "a", "b", "c",
+                "a", "b", "c",
+                "a", "b", "c",
+                "a", "b", "c"))
+                .groupBy(s -> s)
+                .flatMap(grouped -> grouped.reduce((s1, s2) -> s1 + s2))
+                .subscribe(System.out::println);
+
     }
 
     public static class Person {
@@ -42,49 +87,5 @@ public class TestObs {
         public String toString() {
             return firstName + " " + lastName;
         }
-    }
-
-    private Person anna = new Person("Anna", "Johansson");
-    private Person johan = new Person("Johan", "Johansson");
-    private Person selma = new Person("Selma", "Johansson");
-    private Person petter = new Person("Petter", "Karlsson");
-    private Person fredrik = new Person("Fredrik", "Karlsson");
-    private Person david = new Person("David", "Karlsson");
-
-    private HashMap<Person, List<Person>> children = new HashMap<Person, List<Person>>() {{
-        put(anna, Arrays.asList(johan, selma));
-        put(petter, Arrays.asList(fredrik, david));
-    }};
-
-    Observable<Person> people = Observable.just(anna, johan, petter, fredrik);
-
-
-    @Test
-    public void groupBy1() {
-        people
-                .groupBy(person -> person.lastName)
-                .flatMap(groupedByLastName ->
-                        groupedByLastName.toList()
-                                .map(groupedPeople ->
-                                        "People with lastname " + groupedByLastName.getKey() +
-                                                " are " + Arrays.toString(groupedPeople.toArray())))
-                .subscribe(System.out::println);
-    }
-
-
-    @Test
-    public void groupBy2() throws Exception {
-        Observable.from(Arrays.asList("a", "b", "c", "a", "b", "c", "a", "b", "c", "a", "b", "c", "a", "b", "c", "a", "b", "c"))
-                .groupBy(n -> n)
-                .flatMap(g -> {
-                    if (g.getKey().equals("a"))
-                        return g.take(2).reduce((s1, s2) -> s1 + " & " + s2);
-                    else if (g.getKey().equals("b"))
-                        return g.take(3).reduce((s1, s2) -> s1 + " % " + s2);
-                    else if (g.getKey().equals("c"))
-                        return g.take(4).reduce((s1, s2) -> s1 + " € " + s2);
-                    return Observable.empty();
-                }).forEach(System.out::println);
-
     }
 }

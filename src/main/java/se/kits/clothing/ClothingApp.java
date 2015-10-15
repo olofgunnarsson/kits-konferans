@@ -10,7 +10,7 @@ import se.kits.utils.NettyUtils;
 
 import java.net.URI;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class ClothingApp {
 
@@ -21,18 +21,18 @@ public class ClothingApp {
                     final URI uri = URI.create(request.getUri());
                     if (uri.getPath().equals("/shirts"))
                         return Observable
-                                .interval(1, MILLISECONDS)
+                                .interval(1, SECONDS)
                                 .map(aLong -> RandomClothing.getRandomShirt())
                                 .flatMap(NettyUtils.writeAsJson(response));
 
                     else if (uri.getPath().equals("/pants")) {
                         return Observable
-                                .interval(1, MILLISECONDS)
+                                .interval(1, SECONDS)
                                 .map(aLong -> RandomClothing.getRandomPants())
                                 .flatMap(NettyUtils.writeAsJson(response));
                     } else if (uri.getPath().equals("/shoes"))
                         return Observable
-                                .interval(1, MILLISECONDS)
+                                .interval(1, SECONDS)
                                 .map(aLong -> RandomClothing.getRandomShoes())
                                 .flatMap(NettyUtils.writeAsJson(response));
                     return Observable.empty();

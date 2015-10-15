@@ -128,7 +128,7 @@ public class RandomClothing {
 
     public static Clothing getRandomPants() {
         final Random random = new Random();
-        return new Clothing(SHIRTS[random.nextInt(SHIRTS.length)], COLORS[random.nextInt(COLORS.length)]);
+        return new Clothing(PANTS[random.nextInt(PANTS.length)], COLORS[random.nextInt(COLORS.length)]);
     }
 
     public static Clothing getRandomShoes() {
