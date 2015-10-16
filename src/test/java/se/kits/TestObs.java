@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-@SuppressWarnings("Convert2MethodRef")
 public class TestObs {
 
     private Person anna = new Person("Anna", "Johansson");
@@ -34,12 +33,10 @@ public class TestObs {
     }
 
     @Test
-
-
     public void flatMap() {
         Observable<Person> people = Observable.just(anna, petter);
         people
-                .flatMap((person) -> getRelativesObservable(person))
+                .flatMap(this::getRelativesObservable)
                 .subscribe(System.out::println);
     }
 
@@ -74,6 +71,7 @@ public class TestObs {
                 .subscribe(System.out::println);
 
     }
+
 
     public static class Person {
         public final String firstName;
